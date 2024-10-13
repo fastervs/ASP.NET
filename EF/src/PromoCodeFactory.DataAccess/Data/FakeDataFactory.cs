@@ -8,28 +8,6 @@ namespace PromoCodeFactory.DataAccess.Data
 {
     public static class FakeDataFactory
     {
-        public static IEnumerable<Employee> Employees => new List<Employee>()
-        {
-            new Employee()
-            {
-                Id = Guid.Parse("451533d5-d8d5-4a11-9c7b-eb9f14e1a32f"),
-                Email = "owner@somemail.ru",
-                FirstName = "Иван",
-                LastName = "Сергеев",
-                Role = Roles.FirstOrDefault(x => x.Name == "Admin"),
-                AppliedPromocodesCount = 5
-            },
-            new Employee()
-            {
-                Id = Guid.Parse("f766e2bf-340a-46ea-bff3-f1700b435895"),
-                Email = "andreev@somemail.ru",
-                FirstName = "Петр",
-                LastName = "Андреев",
-                Role = Roles.FirstOrDefault(x => x.Name == "PartnerManager"),
-                AppliedPromocodesCount = 10
-            },
-        };
-
         public static IEnumerable<Role> Roles => new List<Role>()
         {
             new Role()
@@ -37,6 +15,7 @@ namespace PromoCodeFactory.DataAccess.Data
                 Id = Guid.Parse("53729686-a368-4eeb-8bfa-cc69b6050d02"),
                 Name = "Admin",
                 Description = "Администратор",
+
             },
             new Role()
             {
@@ -45,6 +24,42 @@ namespace PromoCodeFactory.DataAccess.Data
                 Description = "Партнерский менеджер"
             }
         };
+
+        public static IEnumerable<Employee> Employees => new List<Employee>()
+        {
+            new Employee()
+            {
+                Id = Guid.Parse("451533d5-d8d5-4a11-9c7b-eb9f14e1a32f"),
+                Email = "owner@somemail.ru",
+                FirstName = "Иван",
+                LastName = "Сергеев",
+                Roles = new List<EmployeeRole>()
+                {
+                    new EmployeeRole()
+                    {
+                        RoleId=Guid.Parse("53729686-a368-4eeb-8bfa-cc69b6050d02"),
+                        EmployeeId=Guid.Parse("451533d5-d8d5-4a11-9c7b-eb9f14e1a32f")
+
+                    }
+                },
+                AppliedPromocodesCount = 5,
+                
+            },
+            new Employee()
+            {
+                Id = Guid.Parse("f766e2bf-340a-46ea-bff3-f1700b435895"),
+                Email = "andreev@somemail.ru",
+                FirstName = "Петр",
+                LastName = "Андреев",
+                Roles = new List<EmployeeRole>()
+                {
+
+                },
+                AppliedPromocodesCount = 10
+            },
+        };
+
+        
 
         public static IEnumerable<Preference> Preferences => new List<Preference>()
         {
@@ -78,6 +93,15 @@ namespace PromoCodeFactory.DataAccess.Data
                         Email = "ivan_sergeev@mail.ru",
                         FirstName = "Иван",
                         LastName = "Петров",
+                        Preferences = new List<CustomerPreference>()
+                        {
+                            new CustomerPreference()
+                            {
+                                CustomerId=customerId,
+                                PreferenceId=Guid.Parse("ef7f299f-92d7-459f-896e-078ed53ef99c")
+
+                            }
+                        }
                         //TODO: Добавить предзаполненный список предпочтений
                     }
                 };
@@ -85,5 +109,53 @@ namespace PromoCodeFactory.DataAccess.Data
                 return customers;
             }
         }
+
+        public static IEnumerable<PromoCode> PromoCodes
+        {
+            get
+            {
+                var promoCodes = new List<PromoCode>()
+                {
+                    new PromoCode() {
+                        Id=Guid.Parse("ef7f299f-92d7-459f-896e-078ed53ef99e"),
+                        Code="BlaBla",
+                        BeginDate=DateTime.Now,
+                        EndDate=DateTime.Now.AddDays(10),
+                        PartnerName="Рога и Копыта",
+                        PreferenceId=Guid.Parse("ef7f299f-92d7-459f-896e-078ed53ef99c")
+                    }
+                };
+
+                
+                return promoCodes;
+            }
+        }
+
+        public static IEnumerable<PromoCodePreference> PromoCodePreferences => new List<PromoCodePreference>()
+        {
+            new PromoCodePreference()
+            {
+                PreferenceId = Guid.Parse("ef7f299f-92d7-459f-896e-078ed53ef99c"),
+                PromoCodeId=Guid.Parse("ef7f299f-92d7-459f-896e-078ed53ef99e")
+            }
+           
+        };
+        /*
+       public static IEnumerable<EmployeeRole> EmployeeRoles => new List<EmployeeRole>()
+       {
+           new EmployeeRole()
+           {
+               EmployeeId=Employees.First().Id,
+               RoleId=Roles.First().Id
+           }
+
+       };
+
+       public static void SetRoles()
+       {
+
+           Employees.First().Role.Add(Roles.FirstOrDefault(x => x.Name == "Admin"));
+           Employees.Last().Role.Add(Roles.FirstOrDefault(x => x.Name == "PartnerManager"));
+       }*/
     }
 }

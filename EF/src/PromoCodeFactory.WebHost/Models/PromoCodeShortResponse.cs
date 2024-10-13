@@ -15,5 +15,7 @@ namespace PromoCodeFactory.WebHost.Models
         public string EndDate { get; set; }
 
         public string PartnerName { get; set; }
+
+        public PreferenceShortReponse PreferenceShortReponse { get; set; }
     }
 }
