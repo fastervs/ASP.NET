@@ -1,12 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using PromoCodeFactory.Core.Abstractions.Repositories;
-using PromoCodeFactory.Core.Domain.PromoCodeManagement;
-using PromoCodeFactory.WebHost.Models;
+﻿
 using System.Linq;
 using System.Threading.Tasks;
 using System;
+using PromoCodeFactory.Core.Abstractions.Repositories;
+using PromoCodeFactory.Core.Domain.PromoCodeManagement;
+using PromoCodeFactory.Services.Models;
 
-namespace PromoCodeFactory.WebHost.Services
+namespace PromoCodeFactory.Services
 {
     public class PromoCodeCustomerService
     {
@@ -23,7 +23,7 @@ namespace PromoCodeFactory.WebHost.Services
             _customerRepository = customerRepository;
         }
 
-        public async Task<bool> GivePromoCodesToCustomersWithPreferenceAsync(GivePromoCodeRequest request)
+        public async Task<bool> GivePromoCodesToCustomersWithPreferenceAsync(GivePromoCodeDto request)
         {
             var preferences = await _prefernceRepository.Search(x => x.Name == request.Preference);
 
@@ -51,17 +51,10 @@ namespace PromoCodeFactory.WebHost.Services
 
                 newpromocode.PreferenceId = preference.Id;
                 newpromocode.CustomerId = customer.Id;
-                customer.PromoCode.Add(new CustomerPromoCode()
-                {
-                    CustomerId = customer.Id,
-                    PromoCodeId = newpromocode.Id,
-                });
+                customer.PromoCodes.Add(newpromocode);
                 await _promocodeRepository.AddAsync(newpromocode);
             }
 
-
-
-            //TODO: Создать промокод и выдать его клиентам с указанным предпочтением
             return true;
         }
     }

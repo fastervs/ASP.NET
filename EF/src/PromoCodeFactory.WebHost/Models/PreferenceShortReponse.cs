@@ -14,8 +14,8 @@ namespace PromoCodeFactory.WebHost.Models
 
         public PreferenceShortReponse(Preference preference)
         {
-            Id= preference.Id;
-            Name= preference.Name;
+            Id = preference.Id;
+            Name = preference.Name;
         }
     }
 }

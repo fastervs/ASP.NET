@@ -2,11 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using PromoCodeFactory.Core.Abstractions.Repositories;
 using PromoCodeFactory.Core.Domain.PromoCodeManagement;
+using PromoCodeFactory.Services;
+using PromoCodeFactory.Services.Models;
 using PromoCodeFactory.WebHost.Models;
-using PromoCodeFactory.WebHost.Services;
+using YamlDotNet.Core;
+
+
 
 namespace PromoCodeFactory.WebHost.Controllers
 {
@@ -22,19 +27,25 @@ namespace PromoCodeFactory.WebHost.Controllers
         private readonly IRepository<PromoCode> _promocodeRepository;
 
         private readonly PromoCodeCustomerService _promoCodeCustomerService;
-        
 
-        public PromocodesController(IRepository<PromoCode> promocodesRepository,PromoCodeCustomerService promocodeCustomerService)
+        private readonly IMapper _mapper;
+
+
+        public PromocodesController(IRepository<PromoCode> promocodesRepository,PromoCodeCustomerService promocodeCustomerService,
+            IMapper mapper)
         {
             _promocodeRepository = promocodesRepository;
             _promoCodeCustomerService = promocodeCustomerService;
+            _mapper = mapper;
             
         }
 
         /// <summary>
         /// Получить все промокоды
         /// </summary>
-        /// <returns></returns>
+        /// <returns>
+        /// List of PromoCodeShortResponse
+        /// </returns>
         [HttpGet]
         public async Task<ActionResult<List<PromoCodeShortResponse>>> GetPromocodesAsync()
         {
@@ -57,11 +68,15 @@ namespace PromoCodeFactory.WebHost.Controllers
         /// <summary>
         /// Создать промокод и выдать его клиентам с указанным предпочтением
         /// </summary>
-        /// <returns></returns>
+        /// <returns>
+        /// Ok if success, else bad request 
+        /// </returns>
         [HttpPost]
         public async Task<IActionResult> GivePromoCodesToCustomersWithPreferenceAsync(GivePromoCodeRequest request)
         {
-            var res=await _promoCodeCustomerService.GivePromoCodesToCustomersWithPreferenceAsync(request);
+
+            var res=await _promoCodeCustomerService.
+                GivePromoCodesToCustomersWithPreferenceAsync(_mapper.Map<GivePromoCodeDto>(request));
             if(!res)
                 return BadRequest("No customers with given preference");
 

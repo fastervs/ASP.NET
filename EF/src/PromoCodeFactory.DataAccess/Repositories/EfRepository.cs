@@ -45,22 +45,51 @@ namespace PromoCodeFactory.DataAccess.Repositories
             return entities;
         }
 
-        public async Task AddAsync(T entity)
+        public async Task<T> AddAsync(T entity)
         {
-            await _dataContext.Set<T>().AddAsync(entity);
+            try
+            {
+                await _dataContext.Set<T>().AddAsync(entity);
 
-            await _dataContext.SaveChangesAsync();
+                int changes=await _dataContext.SaveChangesAsync();
+
+                if (changes > 0)
+                    return entity;
+
+                return null;
+            }
+            catch (Exception ex) {
+                return null;
+            }
         }
 
-        public async Task UpdateAsync(T entity)
+        public async Task<bool> UpdateAsync(T entity)
         {
-            await _dataContext.SaveChangesAsync();
+            try
+            {
+                int changes=await _dataContext.SaveChangesAsync();
+
+                return changes > 0;
+
+            }
+            catch (Exception ex)
+            { 
+                return false;
+            }
         }
 
-        public async Task DeleteAsync(T entity)
+        public async Task<bool> DeleteAsync(T entity)
         {
-            _dataContext.Set<T>().Remove(entity);
-            await _dataContext.SaveChangesAsync();
+            try
+            {
+                _dataContext.Set<T>().Remove(entity);
+                int changes = await _dataContext.SaveChangesAsync();
+                return changes > 0;
+            }
+            catch (Exception ex)
+            { 
+                return false;
+            }
         }
     }
 }

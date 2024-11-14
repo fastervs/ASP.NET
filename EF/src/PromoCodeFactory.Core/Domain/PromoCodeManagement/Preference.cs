@@ -8,8 +8,8 @@ namespace PromoCodeFactory.Core.Domain.PromoCodeManagement
 
         public string Name { get; set; }
 
-        public virtual ICollection<CustomerPreference> Customers { get; set; }
+        //public virtual ICollection<CustomerPreference> Customers { get; set; }
 
-        public virtual ICollection<PromoCodePreference> PromoCodes { get; set; }
+        //public virtual ICollection<PromoCodePreference> PromoCodes { get; set; }
     }
 }

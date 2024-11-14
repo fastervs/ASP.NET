@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Castle.Core.Resource;
+using Microsoft.AspNetCore.Mvc;
 using PromoCodeFactory.Core.Abstractions.Repositories;
 using PromoCodeFactory.Core.Domain.Administration;
 using PromoCodeFactory.Core.Domain.PromoCodeManagement;
@@ -20,17 +22,22 @@ namespace PromoCodeFactory.WebHost.Controllers
     {
         private readonly IRepository<Employee> _employeeRepository;
         private readonly IRepository<Role> _roleRepository;
+        private readonly IMapper _mapper;
 
-        public EmployeesController(IRepository<Employee> employeeRepository, IRepository<Role> roleRepository)
+        public EmployeesController(IRepository<Employee> employeeRepository, IRepository<Role> roleRepository,
+            IMapper mapper)
         {
             _employeeRepository = employeeRepository;
             _roleRepository = roleRepository;
+            _mapper = mapper;
         }
 
         /// <summary>
         /// Получить данные всех сотрудников
         /// </summary>
-        /// <returns></returns>
+        /// <returns>
+        /// List of EmployeeShortResponse
+        /// </returns>
         [HttpGet]
         public async Task<List<EmployeeShortResponse>> GetEmployeesAsync()
         {
@@ -50,7 +57,9 @@ namespace PromoCodeFactory.WebHost.Controllers
         /// <summary>
         /// Получить данные сотрудника по id
         /// </summary>
-        /// <returns></returns>
+        /// <returns>
+        /// EmployeeResponse or NotFound
+        /// </returns>
         [HttpGet("{id:guid}")]
         public async Task<ActionResult<EmployeeResponse>> GetEmployeeByIdAsync(Guid id)
         {
@@ -75,11 +84,12 @@ namespace PromoCodeFactory.WebHost.Controllers
         /// <summary>
         /// Добавить сотрудника
         /// </summary>
-        /// <returns></returns>
+        /// <returns>
+        /// EmployeeShortResponse or BadRequest or InternalError
+        /// </returns>
         [HttpPost]
-        public async Task<ActionResult<EmployeeResponse>> CreateEmployeeAsync(CreateOrEditEmployeeRequest request)
+        public async Task<ActionResult<EmployeeShortResponse>> CreateEmployeeAsync(CreateOrEditEmployeeRequest request)
         {
-            //Получаем предпочтения из бд и сохраняем большой объект
             var roles = await _roleRepository
                 .GetRangeByIdsAsync(request.RoleIds);
 
@@ -96,9 +106,13 @@ namespace PromoCodeFactory.WebHost.Controllers
                 Role = x
             }).ToList();
 
-            await _employeeRepository.AddAsync(employee);
+            
 
-            return CreatedAtAction(nameof(GetEmployeeByIdAsync), new { id = employee.Id }, null);
+            var newEmployee = await _employeeRepository.AddAsync(employee);
+            if (newEmployee != null)
+                return _mapper.Map<EmployeeShortResponse>(newEmployee);
+
+            return StatusCode(500);
         }
     }
 }

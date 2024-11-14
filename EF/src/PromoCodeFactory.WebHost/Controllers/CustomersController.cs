@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using PromoCodeFactory.Core.Abstractions.Repositories;
 using PromoCodeFactory.Core.Domain.Administration;
 using PromoCodeFactory.Core.Domain.PromoCodeManagement;
@@ -23,18 +24,23 @@ namespace PromoCodeFactory.WebHost.Controllers
         private readonly IRepository<Preference> _prefernceRepository;
         private readonly DataContext dataContext;
 
+        private readonly IMapper _mapper;
+
         public CustomersController(IRepository<Customer> customerRepository, IRepository<Preference> preferenceRepository,
-            DataContext context)
+            DataContext context, IMapper mapper)
         {
             _customerRepository = customerRepository;
             _prefernceRepository = preferenceRepository;
             dataContext=context;
+            _mapper=mapper;
         }
 
         /// <summary>
         /// Получить всех клиентов
         /// </summary>
-        /// <returns></returns>
+        /// <returns>
+        /// List of CustomerShortResponse
+        /// </returns>
         [HttpGet]
         public async Task<ActionResult<List<CustomerShortResponse>>> GetCustomersAsync()
         {
@@ -50,14 +56,15 @@ namespace PromoCodeFactory.WebHost.Controllers
                 }).ToList();
 
             return customerModelList;
-            //TODO: Добавить получение списка клиентов
             
         }
 
         /// <summary>
         /// Получить информацию по одному клиенту
         /// </summary>
-        /// <returns></returns>
+        /// <returns>
+        /// CustomerResponse or NotFound
+        /// </returns>
         [HttpGet("{id}")]
         public async Task<ActionResult<CustomerResponse>> GetCustomerAsync(Guid id)
         {
@@ -66,19 +73,22 @@ namespace PromoCodeFactory.WebHost.Controllers
             if (customer == null)
                 return NotFound();
 
-            var customerModel = new CustomerResponse(customer);
+            //var customerModel = new CustomerResponse(customer);
+            var customerModel = _mapper.Map<CustomerResponse>(customer);
             
-            return customerModel;
-            //TODO: Добавить получение клиента вместе с выданными ему промомкодами
 
+            return customerModel;
         }
 
         /// <summary>
         /// Создать клиента
         /// </summary>
-        /// <returns></returns>
+        /// <returns>
+        /// Customer if success or BadRequest 
+        /// InternalError Если не удалось добавить клиента но запрос валидацию прошёл
+        /// </returns>
         [HttpPost]
-        public async Task<IActionResult> CreateCustomerAsync(CreateOrEditCustomerRequest request)
+        public async Task<ActionResult<CustomerShortResponse>> CreateCustomerAsync(CreateOrEditCustomerRequest request)
         {
             if (!request.Validate())
                 return BadRequest();
@@ -98,18 +108,24 @@ namespace PromoCodeFactory.WebHost.Controllers
                     Preference = x
                 }).ToList();
 
-            await _customerRepository.AddAsync(customer);
+            var newCustomer=await _customerRepository.AddAsync(customer);
+            if(newCustomer != null)
+                return _mapper.Map<CustomerShortResponse>(newCustomer);
 
-            return CreatedAtAction(nameof(GetCustomerAsync), new { id = customer.Id }, null);
+            return StatusCode(500);
+            
         }
 
 
         /// <summary>
         /// Создать клиента
         /// </summary>
-        /// <returns></returns>
+        /// <returns>
+        /// true or false if statuscode 200
+        /// BadRequest or NotFound
+        /// </returns>
         [HttpPut("{id}")]
-        public async Task<IActionResult> EditCustomersAsync(Guid id,CreateOrEditCustomerRequest request)
+        public async Task<ActionResult<bool>> EditCustomersAsync(Guid id,CreateOrEditCustomerRequest request)
         {
             if (!request.Validate())
                 return BadRequest();
@@ -130,17 +146,19 @@ namespace PromoCodeFactory.WebHost.Controllers
                 Preference = x
             }).ToList();
 
-            await _customerRepository.UpdateAsync(customer);
+            
 
-            return NoContent();
+            return await _customerRepository.UpdateAsync(customer);
         }
 
         /// <summary>
         /// Удалить клиента
         /// </summary>
-        /// <returns></returns>
+        /// <returns>
+        /// true, false or notfound
+        /// </returns>
         [HttpDelete]
-        public async Task<IActionResult> DeleteCustomer(Guid id)
+        public async Task<ActionResult<bool>> DeleteCustomer(Guid id)
         {
             //TODO: Удаление клиента вместе с выданными ему промокодами
             var customer = await _customerRepository.GetByIdAsync(id);
@@ -148,9 +166,7 @@ namespace PromoCodeFactory.WebHost.Controllers
             if (customer == null)
                 return NotFound();
 
-            await _customerRepository.DeleteAsync(customer);
-
-            return NoContent();
+            return await _customerRepository.DeleteAsync(customer);
         }
     }
 }

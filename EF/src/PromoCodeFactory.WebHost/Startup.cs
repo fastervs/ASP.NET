@@ -17,7 +17,9 @@ using PromoCodeFactory.DataAccess.Data;
 using PromoCodeFactory.DataAccess.Repositories;
 using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
 using Microsoft.Extensions.Logging;
-using PromoCodeFactory.WebHost.Services;
+using PromoCodeFactory.Services;
+using System.Reflection;
+using PromoCodeFactory.WebHost.Helpers;
 
 namespace PromoCodeFactory.WebHost
 {
@@ -40,16 +42,9 @@ namespace PromoCodeFactory.WebHost
                 x.UseLazyLoadingProxies();
                 x.LogTo(Console.WriteLine, LogLevel.Information);
             });
-            /*
-            services.AddScoped(typeof(IRepository<Employee>), (x) =>
-                new InMemoryRepository<Employee>(FakeDataFactory.Employees));
-            services.AddScoped(typeof(IRepository<Role>), (x) =>
-                new InMemoryRepository<Role>(FakeDataFactory.Roles));
-            services.AddScoped(typeof(IRepository<Preference>), (x) =>
-                new InMemoryRepository<Preference>(FakeDataFactory.Preferences));
-            services.AddScoped(typeof(IRepository<Customer>), (x) =>
-                new InMemoryRepository<Customer>(FakeDataFactory.Customers));
-            */
+
+            services.AddAutoMapper(typeof(AppMappingProfile));
+            
             services.AddOpenApiDocument(options =>
             {
                 options.Title = "PromoCode Factory API Doc";

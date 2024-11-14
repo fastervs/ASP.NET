@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PromoCodeFactory.Core.Domain.Administration;
 using PromoCodeFactory.Core.Domain.PromoCodeManagement;
+using PromoCodeFactory.DataAccess.EntitiesRelations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,80 +36,9 @@ namespace PromoCodeFactory.DataAccess
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            /*
-            modelBuilder.Entity<EmployeeRole>()
-                .HasKey(bc => new { bc.RoleId, bc.EmployeeId });
-
-            modelBuilder.Entity<Employee>()
-            .HasMany(e => e.Role)
-            .WithMany(e => e.Employees)
-            .UsingEntity<EmployeeRole>();
-            */
-
-            modelBuilder.Entity<PromoCodePreference>()
-                .HasKey(bc => new { bc.PromoCodeId, bc.PreferenceId });
-
-            modelBuilder.Entity<CustomerPromoCode>()
-                .HasKey(bc => new { bc.PromoCodeId, bc.CustomerId });
-
-            modelBuilder.Entity<CustomerPreference>()
-                .HasKey(bc => new { bc.CustomerId, bc.PreferenceId });
-            /*
-            modelBuilder.Entity<CustomerPromoCode>()
-                .HasOne(bc => bc.Customer)
-                .WithMany(b => b.PromoCode)
-                .HasForeignKey(bc => bc.CustomerId);
-            modelBuilder.Entity<CustomerPromoCode>()
-                .HasOne(bc => bc.PromoCode)
-                .WithMany()
-                .HasForeignKey(bc => bc.PromoCodeId);
-
-            
-
-            
-            modelBuilder.Entity<Customer>()
-            .HasMany(c => c.Preferences)
-            .WithOne() // Assuming one preference belongs to one customer
-            .OnDelete(DeleteBehavior.Cascade);
-
-            modelBuilder.Entity<Customer>()
-                .HasMany(c => c.PromoCode)
-                .WithOne() // Assuming one promo code belongs to one customer
-                .OnDelete(DeleteBehavior.Cascade);
-            
-            modelBuilder.Entity<CustomerPreference>()
-                .HasOne(bc => bc.Customer)
-                .WithMany(b => b.Preferences)
-                .HasForeignKey(bc => bc.CustomerId);
-            modelBuilder.Entity<CustomerPreference>()
-                .HasOne(bc => bc.Preference)
-                .WithMany()
-                .HasForeignKey(bc => bc.PreferenceId);*/
-
-            /*
-            modelBuilder.Entity<Customer>().
-                HasMany(x=>x.PromoCode)
-                .WithOne(c=>c.Customer)
-                .OnDelete(DeleteBehavior.Cascade);*/
-
-            /*
-            modelBuilder.Entity<Employee>()
-            .HasMany(e => e.Role)
-            .WithMany(s => s.Employees)
-            .UsingEntity<EmployeeRole>();*/
-
-            modelBuilder.Entity<EmployeeRole>()
-                .HasKey(bc => new { bc.EmployeeId, bc.RoleId });
-            
-            /*
-            modelBuilder.Entity<EmployeeRole>()
-                .HasOne(bc => bc.Employee)
-                .WithMany(b => b.Roles)
-                .HasForeignKey(bc => bc.EmployeeId);
-            modelBuilder.Entity<EmployeeRole>()
-                .HasOne(bc => bc.Role)
-                .WithMany()
-                .HasForeignKey(bc => bc.RoleId);*/
+            modelBuilder.ApplyConfiguration(new CustomerPreferenceConfiguration());
+            modelBuilder.ApplyConfiguration(new CustomerConfiguration());
+            modelBuilder.ApplyConfiguration(new EmployeeRoleConfiguration());
 
         }
     }
