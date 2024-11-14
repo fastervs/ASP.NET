@@ -69,18 +69,18 @@ namespace PromoCodeFactory.WebHost.Controllers
         /// Создать промокод и выдать его клиентам с указанным предпочтением
         /// </summary>
         /// <returns>
-        /// Ok if success, else bad request 
+        /// GivePromoCodeResponse if success, else bad request 
         /// </returns>
         [HttpPost]
-        public async Task<IActionResult> GivePromoCodesToCustomersWithPreferenceAsync(GivePromoCodeRequest request)
+        public async Task<ActionResult<GivePromoCodeResponse>> GivePromoCodesToCustomersWithPreferenceAsync(GivePromoCodeRequest request)
         {
 
             var res=await _promoCodeCustomerService.
                 GivePromoCodesToCustomersWithPreferenceAsync(_mapper.Map<GivePromoCodeDto>(request));
-            if(!res)
-                return BadRequest("No customers with given preference");
+            if(!res.IsSuccess)
+                return BadRequest(res.ErrorMessage);
 
-            return Ok();
+            return res;
         }
     }
 }

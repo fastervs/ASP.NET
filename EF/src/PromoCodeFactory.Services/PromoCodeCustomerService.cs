@@ -23,21 +23,31 @@ namespace PromoCodeFactory.Services
             _customerRepository = customerRepository;
         }
 
-        public async Task<bool> GivePromoCodesToCustomersWithPreferenceAsync(GivePromoCodeDto request)
+        public async Task<GivePromoCodeResponse> GivePromoCodesToCustomersWithPreferenceAsync(GivePromoCodeDto request)
         {
+            GivePromoCodeResponse result=new GivePromoCodeResponse();
+
             var preferences = await _prefernceRepository.Search(x => x.Name == request.Preference);
 
             var preference = preferences.FirstOrDefault();
             if (preference == null)
             {
-                return false;
+                result.IsSuccess=false;
+                result.ErrorMessage = "No such preference";
+                return result;
             }
 
             Guid prefId = preference.Id;
             var customers = await _customerRepository.Search(x => x.Preferences.Any(z => z.PreferenceId == prefId));
             if (customers.Count() == 0)
-                return false;
+            {
+                result.IsSuccess=false;
+                result.ErrorMessage = "No customers";
+                return result;
+            }
 
+            result.PromoCodes = new List<string>();
+            result.IsSuccess = true;
             foreach (var customer in customers)
             {
                 var newpromocode = new PromoCode()
@@ -53,9 +63,10 @@ namespace PromoCodeFactory.Services
                 newpromocode.CustomerId = customer.Id;
                 customer.PromoCodes.Add(newpromocode);
                 await _promocodeRepository.AddAsync(newpromocode);
+                result.PromoCodes.Add(newpromocode.Id.ToString());
             }
 
-            return true;
+            return result;
         }
     }
 }
