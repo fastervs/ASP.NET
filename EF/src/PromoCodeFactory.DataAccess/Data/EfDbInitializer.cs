@@ -18,6 +18,7 @@ namespace PromoCodeFactory.DataAccess.Data
 
         public void InitializeDb()
         {
+            /*
             _dataContext.Database.EnsureDeleted();
             _dataContext.Database.EnsureCreated();
 
@@ -33,7 +34,7 @@ namespace PromoCodeFactory.DataAccess.Data
             _dataContext.SaveChanges();
 
             _dataContext.AddRange(FakeDataFactory.Customers);
-            _dataContext.SaveChanges();
+            _dataContext.SaveChanges();*/
 
             //_dataContext.AddRange(FakeDataFactory.PromoCodes);
            // _dataContext.SaveChanges();
