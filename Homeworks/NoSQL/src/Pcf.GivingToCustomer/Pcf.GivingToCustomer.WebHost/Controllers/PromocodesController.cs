@@ -59,6 +59,12 @@ namespace Pcf.GivingToCustomer.WebHost.Controllers
         [HttpPost]
         public async Task<IActionResult> GivePromoCodesToCustomersWithPreferenceAsync(GivePromoCodeRequest request)
         {
+            request.BeginDate = DateTime.Now.ToString();
+
+            request.EndDate = DateTime.Now.AddDays(7).ToString();
+
+            
+
             //Получаем предпочтение по имени
             var preference = await _preferencesRepository.GetByIdAsync(request.PreferenceId);
 

@@ -17,6 +17,7 @@ using Pcf.GivingToCustomer.DataAccess.Data;
 using Pcf.GivingToCustomer.DataAccess.Repositories;
 using Pcf.GivingToCustomer.Integration;
 using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
+using MongoDB.Bson;
 
 namespace Pcf.GivingToCustomer.WebHost
 {
@@ -35,16 +36,24 @@ namespace Pcf.GivingToCustomer.WebHost
         {
             services.AddControllers().AddMvcOptions(x=> 
                 x.SuppressAsyncSuffixInActionNames = false);
-            services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
+            services.AddSingleton<DataContextMongo>(sp =>
+            {
+                var connectionString = "mongodb://localhost:27017";
+                var databaseName = "testDb";
+                return new DataContextMongo(connectionString, databaseName);
+            });
+
+            services.AddScoped(typeof(IRepository<>), typeof(MongoRepository<>));
             services.AddScoped<INotificationGateway, NotificationGateway>();
-            services.AddScoped<IDbInitializer, EfDbInitializer>();
+            services.AddScoped<IDbInitializer, MongoDbInitialiazer>();
+            /*
             services.AddDbContext<DataContext>(x =>
             {
                 //x.UseSqlite("Filename=PromocodeFactoryGivingToCustomerDb.sqlite");
                 x.UseNpgsql(Configuration.GetConnectionString("PromocodeFactoryGivingToCustomerDb"));
                 x.UseSnakeCaseNamingConvention();
                 x.UseLazyLoadingProxies();
-            });
+            });*/
 
             services.AddOpenApiDocument(options =>
             {
@@ -53,6 +62,7 @@ namespace Pcf.GivingToCustomer.WebHost
             });
         }
 
+        // IDbInitializer dbInitializer
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IDbInitializer dbInitializer)
         {

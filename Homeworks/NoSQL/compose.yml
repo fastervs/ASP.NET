@@ -42,16 +42,13 @@ services:
       - "IntegrationSettings:AdministrationApiUrl=http://promocode-factory-administration-api"       
     depends_on: 
       - promocode-factory-receiving-from-partner-db
-  
   #GivingToCustomer Db
   promocode-factory-giving-to-customer-db:
-    image: "postgres:latest"
+    image: "mongo"
     container_name: 'promocode-factory-giving-to-customer-db'
     restart: always 
     ports:
-      - 5435:5432
-    environment: 
-      - POSTGRES_PASSWORD=docker
+      - 27017:27017
   #GivingToCustomer Api
   promocode-factory-giving-to-customer-api:
     build: src/Pcf.GivingToCustomer/
