@@ -10,6 +10,9 @@ using Pcf.Administration.DataAccess.Repositories;
 using Pcf.Administration.DataAccess.Data;
 using Pcf.Administration.Core.Abstractions.Repositories;
 using System;
+using MassTransit;
+using Pcf.Administration.Core.MessageHandlers;
+using Pcf.Administration.Core.Services;
 
 namespace Pcf.Administration.WebHost
 {
@@ -30,12 +33,27 @@ namespace Pcf.Administration.WebHost
                 x.SuppressAsyncSuffixInActionNames = false);
             services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
             services.AddScoped<IDbInitializer, EfDbInitializer>();
+            services.AddScoped<EmployeeService>();
             services.AddDbContext<DataContext>(x =>
             {
                 //x.UseSqlite("Filename=PromocodeFactoryAdministrationDb.sqlite");
                 x.UseNpgsql(Configuration.GetConnectionString("PromocodeFactoryAdministrationDb"));
                 x.UseSnakeCaseNamingConvention();
                 x.UseLazyLoadingProxies();
+            });
+
+            services.AddMassTransit(x =>
+            {
+                x.AddConsumer<PartnerPromocodeEventConsumer>();
+                x.UsingRabbitMq((context, cfg) =>
+                {
+                    cfg.Host("localhost", "/", h =>
+                    {
+                        h.Username("rmuser");
+                        h.Password("rmpassword");
+                    });
+                    cfg.ConfigureEndpoints(context);
+                });
             });
 
             AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);

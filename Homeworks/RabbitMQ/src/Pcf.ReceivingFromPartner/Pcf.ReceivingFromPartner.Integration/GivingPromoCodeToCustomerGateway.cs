@@ -3,6 +3,8 @@ using System.Threading.Tasks;
 using Pcf.ReceivingFromPartner.Integration.Dto;
 using Pcf.ReceivingFromPartner.Core.Abstractions.Gateways;
 using Pcf.ReceivingFromPartner.Core.Domain;
+using MassTransit;
+using MessageBusDtos;
 
 namespace Pcf.ReceivingFromPartner.Integration
 {
@@ -11,14 +13,17 @@ namespace Pcf.ReceivingFromPartner.Integration
     {
         private readonly HttpClient _httpClient;
 
-        public GivingPromoCodeToCustomerGateway(HttpClient httpClient)
+        private readonly IBus _bus;
+
+        public GivingPromoCodeToCustomerGateway(HttpClient httpClient, IBus bus)
         {
             _httpClient = httpClient;
+            _bus = bus;
         }
 
         public async Task GivePromoCodeToCustomer(PromoCode promoCode)
         {
-            var dto = new GivePromoCodeToCustomerDto()
+            var dto = new GivePromoCodeToCustomerMessage()
             {
                 PartnerId = promoCode.Partner.Id,
                 BeginDate = promoCode.BeginDate.ToShortDateString(),
@@ -29,9 +34,11 @@ namespace Pcf.ReceivingFromPartner.Integration
                 PartnerManagerId = promoCode.PartnerManagerId
             };
 
-            var response = await _httpClient.PostAsJsonAsync("api/v1/promocodes", dto);
+            //var response = await _httpClient.PostAsJsonAsync("api/v1/promocodes", dto);
 
-            response.EnsureSuccessStatusCode();
+            //response.EnsureSuccessStatusCode();
+
+            await _bus.Publish(dto);
         }
     }
 }

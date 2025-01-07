@@ -12,6 +12,9 @@ using Pcf.GivingToCustomer.DataAccess.Data;
 using Pcf.GivingToCustomer.DataAccess;
 using Pcf.GivingToCustomer.DataAccess.Repositories;
 using Pcf.GivingToCustomer.Integration;
+using MassTransit;
+using Pcf.GivingToCustomer.Core.MessageHandlers;
+using Pcf.GivingToCustomer.Core.Services;
 
 namespace Pcf.GivingToCustomer.WebHost
 {
@@ -33,12 +36,27 @@ namespace Pcf.GivingToCustomer.WebHost
             services.AddScoped(typeof(IRepository<>), typeof(EfRepository<>));
             services.AddScoped<INotificationGateway, NotificationGateway>();
             services.AddScoped<IDbInitializer, EfDbInitializer>();
+            services.AddScoped<PromoCodesService>();
             services.AddDbContext<DataContext>(x =>
             {
                 //x.UseSqlite("Filename=PromocodeFactoryGivingToCustomerDb.sqlite");
                 x.UseNpgsql(Configuration.GetConnectionString("PromocodeFactoryGivingToCustomerDb"));
                 x.UseSnakeCaseNamingConvention();
                 x.UseLazyLoadingProxies();
+            });
+
+            services.AddMassTransit(x =>
+            {
+                x.AddConsumer<NewPromocodeMessageHandler>();
+                x.UsingRabbitMq((context, cfg) =>
+                {
+                    cfg.Host("localhost", "/", h =>
+                    {
+                        h.Username("rmuser");
+                        h.Password("rmpassword");
+                    });
+                    cfg.ConfigureEndpoints(context);
+                });
             });
 
             AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);

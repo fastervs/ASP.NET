@@ -1,14 +1,19 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pcf.GivingToCustomer.WebHost", "Pcf.GivingToCustomer.WebHost\Pcf.GivingToCustomer.WebHost.csproj", "{C086AC72-ADC7-432C-99D8-A8D60A0B44CA}"
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35208.52
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pcf.GivingToCustomer.WebHost", "Pcf.GivingToCustomer.WebHost\Pcf.GivingToCustomer.WebHost.csproj", "{C086AC72-ADC7-432C-99D8-A8D60A0B44CA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pcf.GivingToCustomer.DataAccess", "Pcf.GivingToCustomer.DataAccess\Pcf.GivingToCustomer.DataAccess.csproj", "{D7E675A3-9872-47D6-B906-797B7B866534}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pcf.GivingToCustomer.DataAccess", "Pcf.GivingToCustomer.DataAccess\Pcf.GivingToCustomer.DataAccess.csproj", "{D7E675A3-9872-47D6-B906-797B7B866534}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pcf.GivingToCustomer.Core", "Pcf.GivingToCustomer.Core\Pcf.GivingToCustomer.Core.csproj", "{FA64A24E-D404-4E7D-89A8-B87E134F697F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pcf.GivingToCustomer.Core", "Pcf.GivingToCustomer.Core\Pcf.GivingToCustomer.Core.csproj", "{FA64A24E-D404-4E7D-89A8-B87E134F697F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pcf.GivingToCustomer.IntegrationTests", "Pcf.GivingToCustomer.IntegrationTests\Pcf.GivingToCustomer.IntegrationTests.csproj", "{CDA2FEC1-80AE-48E5-AEE8-E26DB672080C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pcf.GivingToCustomer.IntegrationTests", "Pcf.GivingToCustomer.IntegrationTests\Pcf.GivingToCustomer.IntegrationTests.csproj", "{CDA2FEC1-80AE-48E5-AEE8-E26DB672080C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pcf.GivingToCustomer.Integration", "Pcf.GivingToCustomer.Integration\Pcf.GivingToCustomer.Integration.csproj", "{444DC130-7BC4-40C4-9579-4F55DE29CCE5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pcf.GivingToCustomer.Integration", "Pcf.GivingToCustomer.Integration\Pcf.GivingToCustomer.Integration.csproj", "{444DC130-7BC4-40C4-9579-4F55DE29CCE5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MessageBusDtos", "..\Pcf.ReceivingFromPartner\MessageBusDtos\MessageBusDtos.csproj", "{B93C0908-4924-4826-B9BD-52DB34C9CA6F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -36,5 +41,15 @@ Global
 		{444DC130-7BC4-40C4-9579-4F55DE29CCE5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{444DC130-7BC4-40C4-9579-4F55DE29CCE5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{444DC130-7BC4-40C4-9579-4F55DE29CCE5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B93C0908-4924-4826-B9BD-52DB34C9CA6F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B93C0908-4924-4826-B9BD-52DB34C9CA6F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B93C0908-4924-4826-B9BD-52DB34C9CA6F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B93C0908-4924-4826-B9BD-52DB34C9CA6F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {73A0F0C3-9394-4DC1-B4FE-1EB7C57612F0}
 	EndGlobalSection
 EndGlobal
